@@ -25,7 +25,7 @@ jobs:
         ignore_failure: false
 
     - name: Security check report artifacts
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4.6.1
       # if: failure()
       with:
         name: Security report
