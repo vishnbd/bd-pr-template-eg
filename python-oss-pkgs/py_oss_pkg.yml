@@ -1,0 +1,9 @@
+---
+# List of Python OSS Packages
+package: OSS
+  type: python
+  packages:
+    - name: oss-pkg-1
+      versions: [1, 2, 3]
+    - name: oss-pkg-2
+      versions: [a, b , c]
