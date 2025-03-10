@@ -7,26 +7,34 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  # Job to perform Bandit scan on the codebase.
+  sast_scan:
+    name: Run Bandit Scan
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ '3.10', '3.11' ]
-    name: Python ${{ matrix.python-version }}
 
     steps:
-    - uses: actions/checkout@v2
+      # Check out the code from the repository.
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Security check - Bandit
-      uses: ./
-      with:
-        python_version: ${{ matrix.python-version }}
-        project_path: .
-        ignore_failure: false
+      # Set up Python for the Bandit scan.
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
 
-    - name: Security check report artifacts
-      uses: actions/upload-artifact@v4.6.1
-      # if: failure()
-      with:
-        name: Security report
-        path: output/security_report.txt
+      # Install Bandit tool for static analysis of Python code.
+      - name: Install Bandit
+        run: pip install bandit
+
+      # Run Bandit scan on the codebase and generate a JSON report.
+      - name: Run Bandit Scan
+        run: bandit -ll -ii -r . -f json -o bandit-report.json
+
+      # Upload the Bandit scan report as an artifact for later analysis.
+      - name: Upload Bandit Scan Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-findings
+          path: bandit-report.json
