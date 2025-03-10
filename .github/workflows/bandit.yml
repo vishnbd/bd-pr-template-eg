@@ -1,6 +1,10 @@
 name: Security check - Bandit
 
-on: push
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -8,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        python-version: [ '2.7.17', '3.6.10' ]
+        python-version: [ '3.10', '3.11' ]
     name: Python ${{ matrix.python-version }} ${{ matrix.os }} 
 
     steps:
@@ -19,7 +23,7 @@ jobs:
       with:
         python_version: ${{ matrix.python-version }}
         project_path: .
-        ignore_failure: true
+        ignore_failure: false
 
     - name: Security check report artifacts
       uses: actions/upload-artifact@v1
