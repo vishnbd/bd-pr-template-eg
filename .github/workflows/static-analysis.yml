@@ -8,6 +8,7 @@ on:
 
 jobs:
   lint:
+    name: Flake8
     runs-on: ubuntu-latest
 
     steps:
