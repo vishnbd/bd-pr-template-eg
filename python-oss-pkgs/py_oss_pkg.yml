@@ -18,3 +18,5 @@ packages:
         - 1.2.3
         - 2.1
         - 4.2
+    - name: oss-pkg-4
+        - 1.0
