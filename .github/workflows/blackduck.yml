@@ -1,0 +1,53 @@
+name: Black Duck SCA Scan
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  blackduck-scan:
+    name: Run Black Duck SCA Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Check Python version
+      - name: Check Python version
+        run: python3 -V
+
+      # Set up Java (required for Black Duck Detect CLI)
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'  # Black Duck Detect requires Java 8 or 11
+
+      # Download Black Duck Detect CLI
+      - name: Download Black Duck Detect CLI
+        run: |
+          curl -L -o detect.sh https://detect.blackduck.com/detect10.sh
+          chmod +x detect.sh
+
+      # Run Black Duck Detect CLI
+      - name: Run Black Duck Detect
+        env:
+            BLACKDUCK_URL: ${{ vars.BLACKDUCK_URL }}
+            BLACKDUCK_API_TOKEN: ${{ secrets.BLACKDUCK_API_TOKEN }}
+        run: |
+          ./detect.sh \
+            --blackduck.url=$BLACKDUCK_URL \
+            --blackduck.api.token=$BLACKDUCK_API_TOKEN \
+            --detect.project.name="bd-pr-template-eg" \
+            --detect.project.version.name="${{ github.event.pull_request.head.ref }}" \
+            --detect.project.version.distribution=INTERNAL \
+            --detect.project.version.update=true \
+            --detect.tools=BINARY_SCAN \
+            --detect.source.path=.binaries \
+            --detect.binary.scan.file.name.patterns="*" \
+            --detect.wait.for.results=true \
+            --detect.policy.check.fail.on.names="hw_bd_demo_vuln_risk" \
+            --detect.notices.report=true \
+            --detect.report.timeout=300
