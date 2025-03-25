@@ -53,7 +53,7 @@ jobs:
             --blackduck.url=$BLACKDUCK_URL \
             --blackduck.api.token=$BLACKDUCK_API_TOKEN \
             --detect.project.name="bd-pr-template-eg" \
-            --detect.project.version.name=$PR_NUMBER \
+            --detect.project.version.name="PR-$PR_NUMBER" \
             --detect.project.version.distribution=INTERNAL \
             --detect.project.version.update=true \
             --detect.tools=BINARY_SCAN \
