@@ -19,6 +19,13 @@ jobs:
       - name: Check Python version
         run: python3 -V
 
+      # Run pip download
+      - name: Run pip download
+        run: |
+          pip download -r python-oss-pkgs/requirements_py.txt \
+          -d ".binaries" --only-binary=:all: \
+          -i https://$JFROG_USER:$JFROG_TOKEN@trialk9fuj6.jfrog.io/artifactory/api/pypi/bd-demo-pypi-remote/simple
+
       # Set up Java (required for Black Duck Detect CLI)
       - name: Set up Java
         uses: actions/setup-java@v3
