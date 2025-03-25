@@ -21,6 +21,9 @@ jobs:
 
       # Run pip download
       - name: Run pip download
+        env:
+            JFROG_USER: ${{ secrets.JFROG_USER }}
+            JFROG_TOKEN: ${{ secrets.JFROG_TOKEN }}
         run: |
           pip download -r python-oss-pkgs/requirements_py.txt \
           -d ".binaries" --only-binary=:all: \
