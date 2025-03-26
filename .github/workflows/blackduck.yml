@@ -47,12 +47,13 @@ jobs:
         env:
             BLACKDUCK_URL: ${{ vars.BLACKDUCK_URL }}
             BLACKDUCK_API_TOKEN: ${{ secrets.BLACKDUCK_API_TOKEN }}
+            PR_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
         run: |
           ./detect.sh \
             --blackduck.url=$BLACKDUCK_URL \
             --blackduck.api.token=$BLACKDUCK_API_TOKEN \
             --detect.project.name="bd-pr-template-eg" \
-            --detect.project.version.name="${{ github.event.pull_request.head.ref }}" \
+            --detect.project.version.name="PR-$PR_NUMBER" \
             --detect.project.version.distribution=INTERNAL \
             --detect.project.version.update=true \
             --detect.tools=BINARY_SCAN \
