@@ -83,7 +83,10 @@ jobs:
       - name: Grep BOM url
         if: always()
         run: |
-          cat $output_file | grep 'Black Duck Project BOM:' | awk '{print $2}'
+          set -e
+
+          ls -l
+          while read a b url; do [[ $b == 'Black Duck Project BOM: ' ]] && echo $url; done < $output_file
 
       # Post scan: Upload RiskReport.pdf to PR comments
       - name: Upload RiskReport.pdf to PR comments
