@@ -52,7 +52,9 @@ jobs:
             PR_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
         run: |
           set -o pipefail
+          
           output_file="output.txt"
+          
           ./detect.sh \
             --blackduck.url=$BLACKDUCK_URL \
             --blackduck.api.token=$BLACKDUCK_API_TOKEN \
@@ -66,7 +68,7 @@ jobs:
             --detect.wait.for.results=true \
             --detect.policy.check.fail.on.names="hw_bd_demo_vuln_risk" \
             --detect.report.timeout=300 \
-            --detect.risk.report.pdf=true | tee $output_file | grep 'Black Duck Project BOM:' | awk '{print $2}'
+            --detect.risk.report.pdf=true | tee $output_file
 
           if [ $? -ne 0 ]; then
             echo "One of the commands failed!!"
@@ -74,6 +76,7 @@ jobs:
 
           echo "End of scan"
           ls -l
+          echo "The command output is below: "
           cat $output_file
 
       # Post scan: Upload RiskReport.pdf to PR comments
