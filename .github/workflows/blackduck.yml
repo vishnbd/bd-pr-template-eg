@@ -35,7 +35,10 @@ jobs:
       - name: Check if whl files in .binaries dir
         id: check_whl_files
         run: |
+          ls l
+          mkdir -p .binaries
           echo "Check if files exist..."
+          ls l
           files_exist=
           if ls -A .binaries 2> /dev/null | grep -q .; then
             echo "Files exist"
@@ -58,7 +61,6 @@ jobs:
         run: |
           curl -L -o detect.sh https://detect.blackduck.com/detect10.sh
           chmod +x detect.sh
-          mkdir -p .binaries
 
       # Run Black Duck Detect CLI
       - name: Run Black Duck Detect
