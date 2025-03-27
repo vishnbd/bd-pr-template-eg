@@ -51,7 +51,7 @@ jobs:
             BLACKDUCK_API_TOKEN: ${{ secrets.BLACKDUCK_API_TOKEN }}
             PR_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
         run: |
-          output_file = "output.txt"
+          output_file="output.txt"
           ./detect.sh \
             --blackduck.url=$BLACKDUCK_URL \
             --blackduck.api.token=$BLACKDUCK_API_TOKEN \
