@@ -79,15 +79,6 @@ jobs:
           echo "The command output is below: "
           cat $output_file
 
-      # Parse the output file to capture the BOM URL
-      - name: Grep BOM url
-        if: always()
-        run: |
-          set -e
-
-          ls -l
-          while read a b url; do [[ $b == "Black Duck Project BOM: " ]] && echo $url; done < output.txt
-
       # Post scan: Upload RiskReport.pdf to PR comments
       - name: Upload RiskReport.pdf to PR comments
         if: always()

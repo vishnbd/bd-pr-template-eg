@@ -1,14 +1,11 @@
 name: Push OSS components to Approved Repo
 
 on:
-  workflow_run:
-    workflows: [Black Duck SCA Scan]
-    types:
-      - completed
+  push:
     branches: [main, vishnbd-patch-2]
   
 jobs:
-    run-script:
+    copy-oss-components:
         runs-on: ubuntu-latest
 
         steps:
@@ -26,6 +23,7 @@ jobs:
                   JFROG_USER: ${{ secrets.JFROG_USER }}
                   JFROG_TOKEN: ${{ secrets.JFROG_TOKEN }}
               run: |
+                sleep 60
                 pip download -r python-oss-pkgs/requirements_py.txt \
                 -d ".binaries" --only-binary=:all: \
                 -i https://$JFROG_USER:$JFROG_TOKEN@trialk9fuj6.jfrog.io/artifactory/api/pypi/bd-demo-pypi-remote/simple
