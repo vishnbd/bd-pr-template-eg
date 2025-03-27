@@ -64,7 +64,7 @@ jobs:
             --detect.policy.check.fail.on.names="hw_bd_demo_vuln_risk" \
             --detect.report.timeout=300 \
             --detect.risk.report.pdf=true \ 
-            --detect.risk.report.pdf.path="${PWD}/../" 
+            --detect.risk.report.pdf.path="/" 
 
       # Post scan: Upload RiskReport.pdf to PR comments
       - name: Upload RiskReport.pdf to PR comments
