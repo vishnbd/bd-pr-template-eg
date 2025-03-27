@@ -28,7 +28,7 @@ jobs:
             JFROG_TOKEN: ${{ secrets.JFROG_TOKEN }}
         run: |
           pip download -r python-oss-pkgs/requirements_py.txt \
-          -d ".binaries" --only-binary=:all: \
+          -d "binaries" --only-binary=:all: \
           -i https://$JFROG_USER:$JFROG_TOKEN@trialk9fuj6.jfrog.io/artifactory/api/pypi/bd-demo-pypi-remote/simple
 
       # Check if python files in dir
@@ -36,16 +36,16 @@ jobs:
         id: check_whl_files
         run: |
           ls -l
-          mkdir -p .binaries
+          mkdir -p binaries
           echo "Check if files exist..."
           ls -l
           files_exist=
-          if ls -A .binaries 2> /dev/null | grep -q .; then
-            echo "Files exist"
-            echo "files_exist=true" >> $GITHUB_OUTPUT
+          if ls -A binaries 2> /dev/null | grep -q .; then
+              echo "Files exist"
+              echo "files_exist=true" >> $GITHUB_OUTPUT
           else            
-            echo "No files exist"
-            echo "files_exist=true" >> $GITHUB_OUTPUT
+              echo "No files exist"
+              echo "files_exist=true" >> $GITHUB_OUTPUT
           fi
 
       # Set up Java (required for Black Duck Detect CLI)
@@ -57,7 +57,7 @@ jobs:
 
       # Download Black Duck Detect CLI
       - name: Download Black Duck Detect CLI
-        if: ${{ steps.check_whl_files.outputs.files_exist == true }}
+        if: steps.check_whl_files.outputs.files_exist == 'true'
         run: |
           curl -L -o detect.sh https://detect.blackduck.com/detect10.sh
           chmod +x detect.sh
@@ -82,7 +82,7 @@ jobs:
             --detect.project.version.distribution=INTERNAL \
             --detect.project.version.update=true \
             --detect.tools=BINARY_SCAN \
-            --detect.source.path=.binaries \
+            --detect.source.path=binaries \
             --detect.binary.scan.file.name.patterns="*" \
             --detect.wait.for.results=true \
             --detect.policy.check.fail.on.names="hw_bd_demo_vuln_risk" \
