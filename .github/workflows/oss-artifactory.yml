@@ -1,0 +1,45 @@
+name: Push OSS components to Approved Repo
+
+on:
+  push:
+    branches: [main]
+  
+jobs:
+    copy-oss-components:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: 3.12
+
+            # Download pkgs from Artifactory using pip
+            - name: Download pkgs locally
+              env:
+                  JFROG_USER: ${{ secrets.JFROG_USER }}
+                  JFROG_TOKEN: ${{ secrets.JFROG_TOKEN }}
+              run: |
+                sleep 60
+                pip download -r python-oss-pkgs/requirements_py.txt \
+                -d ".binaries" --only-binary=:all: \
+                -i https://$JFROG_USER:$JFROG_TOKEN@trialk9fuj6.jfrog.io/artifactory/api/pypi/bd-demo-pypi-remote/simple
+
+            - name: Install dependencies
+              run: |
+                python -m pip install --upgrade pip
+                pip install -r requirements.txt
+
+            - name: Run main.py - copy OSS pkgs to approved repo
+              env:
+                ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+                ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
+                REMOTE_REPO: bd-demo-pypi-remote-cache
+                DEST_REPO: bd-demo-pypi-local
+                BINARIES_FOLDER: ".binaries"
+              run: |
+                export PYTHONPATH=$PYTHONPATH:bd-demo/src
+                python bd-demo/src/main.py
