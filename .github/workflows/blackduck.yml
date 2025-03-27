@@ -51,6 +51,7 @@ jobs:
             BLACKDUCK_API_TOKEN: ${{ secrets.BLACKDUCK_API_TOKEN }}
             PR_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
         run: |
+          output_file = "output.txt"
           ./detect.sh \
             --blackduck.url=$BLACKDUCK_URL \
             --blackduck.api.token=$BLACKDUCK_API_TOKEN \
@@ -65,9 +66,10 @@ jobs:
             --detect.policy.check.fail.on.names="hw_bd_demo_vuln_risk" \
             --detect.report.timeout=300 \
             --detect.risk.report.pdf=true \ 
-            --detect.risk.report.pdf.path="./bd-demo" | tee detect_output
+            --detect.risk.report.pdf.path="${PWD}/bd-demo" 2>&1 | tee $output_file
           echo "End of scan"
-          ls -l          
+          ${PWD}
+          ls -l         
 
       # Post scan: Upload RiskReport.pdf to PR comments
       - name: Upload RiskReport.pdf to PR comments
@@ -77,8 +79,12 @@ jobs:
         run: |
           RISK_REPORT=$(find . -name "*RiskReport.pdf" | head -n 1)
           if [ -f "$RISK_REPORT" ]; then
-            COMMENT_BODY="### Black Duck Risk Report\n\nThe scan has completed successfully. Please find the Risk Report attached."
+            COMMENT_BODY="""
+            ### Black Duck Risk Report
+            The scan has completed successfully. Please find the Risk Report attached.
+            """
             gh pr comment ${{ github.event.pull_request.number || github.event.number }} --body "$COMMENT_BODY"
+            gh pr comment ${{ github.event.pull_request.number || github.event.number }} -F "$RISK_REPORT"
           else
             echo "RiskReport.pdf not found."
           fi
