@@ -65,11 +65,9 @@ jobs:
             --detect.wait.for.results=true \
             --detect.policy.check.fail.on.names="hw_bd_demo_vuln_risk" \
             --detect.report.timeout=300 \
-            --detect.risk.report.pdf=true \ 
-            --detect.risk.report.pdf.path="${PWD}/bd-demo" 2>&1 | tee $output_file
+            --detect.risk.report.pdf=true | tee $output_file
           echo "End of scan"
-          ${PWD}
-          ls -l         
+          ls -l   
 
       # Post scan: Upload RiskReport.pdf to PR comments
       - name: Upload RiskReport.pdf to PR comments
@@ -84,7 +82,6 @@ jobs:
             The scan has completed successfully. Please find the Risk Report attached.
             """
             gh pr comment ${{ github.event.pull_request.number || github.event.number }} --body "$COMMENT_BODY"
-            gh pr comment ${{ github.event.pull_request.number || github.event.number }} -F "$RISK_REPORT"
           else
             echo "RiskReport.pdf not found."
           fi
