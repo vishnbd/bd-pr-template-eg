@@ -54,7 +54,7 @@ jobs:
           set -o pipefail
           
           output_file="output.txt"
-          
+
           ./detect.sh \
             --blackduck.url=$BLACKDUCK_URL \
             --blackduck.api.token=$BLACKDUCK_API_TOKEN \
@@ -68,7 +68,7 @@ jobs:
             --detect.wait.for.results=true \
             --detect.policy.check.fail.on.names="hw_bd_demo_vuln_risk" \
             --detect.report.timeout=300 \
-            --detect.risk.report.pdf=true | tee $output_file
+            --detect.risk.report.pdf=true | grep 'Black Duck Project BOM:' | awk '{print $2}'
 
           if [ $? -ne 0 ]; then
             echo "One of the commands failed!!"
