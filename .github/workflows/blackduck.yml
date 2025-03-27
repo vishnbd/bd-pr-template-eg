@@ -113,4 +113,9 @@ jobs:
             gh pr comment ${{ github.event.pull_request.number || github.event.number }} --body "$COMMENT_BODY"
           else
             echo "RiskReport.pdf not found."
+            NO_BD_SCAN="""
+            ### Black Duck Scan Status
+            Black Duck scan either failed or skipped (due to missing binary files).
+            """
+            gh pr comment ${{ github.event.pull_request.number || github.event.number }} --body "$NO_BD_SCAN"
           fi
