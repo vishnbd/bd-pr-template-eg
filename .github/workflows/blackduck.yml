@@ -32,7 +32,7 @@ jobs:
           -i https://$JFROG_USER:$JFROG_TOKEN@trialk9fuj6.jfrog.io/artifactory/api/pypi/bd-demo-pypi-remote/simple
 
       # Check if python files in dir
-      - name: Check if whl files in .binaries dir
+      - name: Check if whl files in binaries dir
         id: check_whl_files
         run: |
           ls -l

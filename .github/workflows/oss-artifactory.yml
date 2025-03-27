@@ -5,41 +5,60 @@ on:
     branches: [main]
   
 jobs:
-    copy-oss-components:
-        runs-on: ubuntu-latest
+  copy-oss-components:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-            - name: Set up Python
-              uses: actions/setup-python@v4
-              with:
-                python-version: 3.12
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
 
-            # Download pkgs from Artifactory using pip
-            - name: Download pkgs locally
-              env:
-                  JFROG_USER: ${{ secrets.JFROG_USER }}
-                  JFROG_TOKEN: ${{ secrets.JFROG_TOKEN }}
-              run: |
-                sleep 60
-                pip download -r python-oss-pkgs/requirements_py.txt \
-                -d ".binaries" --only-binary=:all: \
-                -i https://$JFROG_USER:$JFROG_TOKEN@trialk9fuj6.jfrog.io/artifactory/api/pypi/bd-demo-pypi-remote/simple
+        # Download pkgs from Artifactory using pip
+      - name: Download pkgs locally
+        env:
+            JFROG_USER: ${{ secrets.JFROG_USER }}
+            JFROG_TOKEN: ${{ secrets.JFROG_TOKEN }}
+        run: |
+            sleep 60
+            pip download -r python-oss-pkgs/requirements_py.txt \
+            -d "binaries" --only-binary=:all: \
+            -i https://$JFROG_USER:$JFROG_TOKEN@trialk9fuj6.jfrog.io/artifactory/api/pypi/bd-demo-pypi-remote/simple
 
-            - name: Install dependencies
-              run: |
-                python -m pip install --upgrade pip
-                pip install -r requirements.txt
+      # Check if python files in dir
+      - name: Check if whl files in binaries dir
+        id: check_whl_files
+        run: |
+            ls -l
+            mkdir -p binaries
+            echo "Check if files exist..."
+            ls -l
+            files_exist=
+            if ls -A binaries 2> /dev/null | grep -q .; then
+              echo "Files exist"
+              echo "files_exist=true" >> $GITHUB_OUTPUT
+            else            
+              echo "No files exist"
+              echo "files_exist=" >> $GITHUB_OUTPUT
+            fi
 
-            - name: Run main.py - copy OSS pkgs to approved repo
-              env:
-                ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
-                ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
-                REMOTE_REPO: bd-demo-pypi-remote-cache
-                DEST_REPO: bd-demo-pypi-local
-                BINARIES_FOLDER: ".binaries"
-              run: |
-                export PYTHONPATH=$PYTHONPATH:bd-demo/src
-                python bd-demo/src/main.py
+      - name: Install dependencies
+        if: steps.check_whl_files.outputs.files_exist == 'true'
+        run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+      - name: Run main.py - copy OSS pkgs to approved repo
+        env:
+            ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+            ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
+            REMOTE_REPO: bd-demo-pypi-remote-cache
+            DEST_REPO: bd-demo-pypi-local
+            BINARIES_FOLDER: "binaries"
+        if: steps.check_whl_files.outputs.files_exist == 'true'
+        run: |
+            export PYTHONPATH=$PYTHONPATH:bd-demo/src
+            python bd-demo/src/main.py
