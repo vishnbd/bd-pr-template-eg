@@ -35,10 +35,10 @@ jobs:
       - name: Check if whl files in .binaries dir
         id: check_whl_files
         run: |
-          ls l
+          ls -l
           mkdir -p .binaries
           echo "Check if files exist..."
-          ls l
+          ls -l
           files_exist=
           if ls -A .binaries 2> /dev/null | grep -q .; then
             echo "Files exist"
