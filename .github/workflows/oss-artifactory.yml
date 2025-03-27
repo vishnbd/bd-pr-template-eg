@@ -2,7 +2,7 @@ name: Push OSS components to Approved Repo
 
 on:
   push:
-    branches: [main, vishnbd-patch-2]
+    branches: [main]
   
 jobs:
     copy-oss-components:
