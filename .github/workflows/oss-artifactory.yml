@@ -1,4 +1,4 @@
-name: Copy approved OSS to Artifactory repo
+name: Push OSS components to Approved Repo
 
 on:
   workflow_run:
