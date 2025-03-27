@@ -22,7 +22,7 @@ jobs:
           python3 -V
 
       # Download pkgs from Artifactory using pip
-      - name: Run pip download
+      - name: Run pip download        
         env:
             JFROG_USER: ${{ secrets.JFROG_USER }}
             JFROG_TOKEN: ${{ secrets.JFROG_TOKEN }}
@@ -30,6 +30,18 @@ jobs:
           pip download -r python-oss-pkgs/requirements_py.txt \
           -d ".binaries" --only-binary=:all: \
           -i https://$JFROG_USER:$JFROG_TOKEN@trialk9fuj6.jfrog.io/artifactory/api/pypi/bd-demo-pypi-remote/simple
+
+      # Check if python files in dir
+      - name: Check if whl files in .binaries dir
+        id: check_whl_files
+        run: |
+          files_exist=
+          if ls -A .binaries 2> /dev/null | grep -q .; then
+            echo "files_exist=true" >> $GITHUB_OUTPUT
+          else            
+            echo "No files exist"
+            echo "files_exist=" >> $GITHUB_OUTPUT
+          fi
 
       # Set up Java (required for Black Duck Detect CLI)
       - name: Set up Java
@@ -40,6 +52,7 @@ jobs:
 
       # Download Black Duck Detect CLI
       - name: Download Black Duck Detect CLI
+        if: ${{ steps.check_whl_files.outputs.files_exist == true }}
         run: |
           curl -L -o detect.sh https://detect.blackduck.com/detect10.sh
           chmod +x detect.sh
@@ -51,6 +64,7 @@ jobs:
             BLACKDUCK_URL: ${{ vars.BLACKDUCK_URL }}
             BLACKDUCK_API_TOKEN: ${{ secrets.BLACKDUCK_API_TOKEN }}
             PR_NUMBER: ${{ github.event.pull_request.number || github.event.number }}
+        if: ${{ steps.check_whl_files.outputs.files_exist == true }}
         run: |
           set -oe pipefail
           
