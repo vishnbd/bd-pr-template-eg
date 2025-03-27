@@ -19,7 +19,7 @@ jobs:
       - name: Check Python version
         run: python3 -V
 
-      # Run pip download
+      # Download pkgs from Artifactory using pip
       - name: Run pip download
         env:
             JFROG_USER: ${{ secrets.JFROG_USER }}
@@ -61,5 +61,18 @@ jobs:
             --detect.binary.scan.file.name.patterns="*" \
             --detect.wait.for.results=true \
             --detect.policy.check.fail.on.names="hw_bd_demo_vuln_risk" \
-            --detect.notices.report=true \
             --detect.report.timeout=300
+
+      # Post scan: Upload RiskReport.pdf to PR comments
+      - name: Upload RiskReport.pdf to PR comments
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RISK_REPORT=$(find . -name "*RiskReport.pdf" | head -n 1)
+          if [ -f "$RISK_REPORT" ]; then
+          COMMENT_BODY="### Black Duck Risk Report\n\nThe scan has completed successfully. Please find the Risk Report attached."
+          gh pr comment ${{ github.event.pull_request.number || github.event.number }} --body "$COMMENT_BODY" --attach "$RISK_REPORT"
+          else
+          echo "RiskReport.pdf not found."
+          fi
