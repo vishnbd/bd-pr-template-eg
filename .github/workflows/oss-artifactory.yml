@@ -23,8 +23,7 @@ jobs:
             JFROG_USER: ${{ secrets.JFROG_USER }}
             JFROG_TOKEN: ${{ secrets.JFROG_TOKEN }}
         run: |
-            sleep 60
-            pip download -r python-oss-pkgs/requirements_py.txt \
+            pip download -r python-oss-pkgs/py_oss_components.txt \
             -d "binaries" --only-binary=:all: \
             -i https://$JFROG_USER:$JFROG_TOKEN@trialk9fuj6.jfrog.io/artifactory/api/pypi/bd-demo-pypi-remote/simple
 
