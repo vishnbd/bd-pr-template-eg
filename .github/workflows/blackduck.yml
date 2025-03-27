@@ -61,7 +61,9 @@ jobs:
             --detect.binary.scan.file.name.patterns="*" \
             --detect.wait.for.results=true \
             --detect.policy.check.fail.on.names="hw_bd_demo_vuln_risk" \
-            --detect.report.timeout=300
+            --detect.report.timeout=300 \
+            --detect.risk.report.pdf=true \ 
+            --detect.risk.report.pdf.path="${PWD}" 
 
       # Post scan: Upload RiskReport.pdf to PR comments
       - name: Upload RiskReport.pdf to PR comments
@@ -71,8 +73,8 @@ jobs:
         run: |
           RISK_REPORT=$(find . -name "*RiskReport.pdf" | head -n 1)
           if [ -f "$RISK_REPORT" ]; then
-          COMMENT_BODY="### Black Duck Risk Report\n\nThe scan has completed successfully. Please find the Risk Report attached."
-          gh pr comment ${{ github.event.pull_request.number || github.event.number }} --body "$COMMENT_BODY" --attach "$RISK_REPORT"
+            COMMENT_BODY="### Black Duck Risk Report\n\nThe scan has completed successfully. Please find the Risk Report attached."
+            gh pr comment ${{ github.event.pull_request.number || github.event.number }} --body "$COMMENT_BODY" --attach "$RISK_REPORT"
           else
-          echo "RiskReport.pdf not found."
+            echo "RiskReport.pdf not found."
           fi
